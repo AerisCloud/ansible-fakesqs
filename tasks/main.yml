@@ -1,0 +1,50 @@
+- name: "Check if Fake SQS is installed"
+  shell: |
+    executable=/bin/bash
+    source /etc/profile.d/rvm.sh
+    rvm use {{ fake_sqs_ruby_version }}
+    which fake_sqs 2> /dev/null
+  register: which_fakesqs
+  ignore_errors: True
+  tags:
+    - fakesqs
+
+- name: "Install Ruby"
+  shell: |
+    {{ rvm_path }}/bin/rvm \
+    install {{ fake_sqs_ruby_version }}
+  when: which_fakesqs|failed
+  tags:
+    - fakesqs
+
+- name: "Install Fake SQS"
+  shell: |
+    executable=/bin/bash
+    source /etc/profile.d/rvm.sh
+    rvm use {{ fake_sqs_ruby_version }}
+    {{ gem_path }} install fake_sqs -v {{ fake_sqs_version }}
+  when: which_fakesqs|failed
+  tags:
+    - fakesqs
+
+- name: "Install Fake SQS init.d script"
+  template: >
+    src=fakesqs.init.sh.j2
+    dest=/etc/init.d/fakesqs
+    owner=root
+    group=root
+    mode=0700
+  notify:
+      - restart fakesqs
+  tags:
+    - fakesqs
+    - files
+
+- name: "Make Fake SQS start on boot"
+  service: >
+    name=fakesqs
+    state=started
+    enabled=yes
+    runlevel=5
+  tags:
+    - fakesqs

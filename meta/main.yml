@@ -1,0 +1,23 @@
+galaxy_info:
+  author: Emilien Kenler <ekenler@wizcorp.jp>
+  description: Installs the development version of the Amazon SQS server
+  company: Wizcorp K.K.
+  license: MIT
+  min_ansible_version: 1.8.1
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+    - name: Debian
+      versions:
+        - wheezy
+    - name: Ubuntu
+      versions:
+        - all
+  categories:
+    - development
+dependencies:
+  - role: aeriscloud.rvm
+    tags:
+      - rvm

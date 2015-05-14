@@ -1,0 +1,109 @@
+#!/bin/bash
+#
+# Fake SQS
+#
+# chkconfig: 3 50 50
+# description: Fake SQS init.d
+source /etc/profile.d/rvm.sh
+prog=fake_sqs
+pidfile=/var/run/fake_sqs.pid
+PID="$(cat ${pidfile} 2> /dev/null)"
+LOG=/var/log/fake_sqs.log
+RETVAL=0
+
+start() {
+    echo -n $"Starting ${prog}: "
+
+    rvm use {{ fake_sqs_ruby_version }}
+
+    if
+        [ "${?}" != "0" ]
+    then
+        echo "Could not find ruby (version: {{ fake_sqs_ruby_version }})";
+        return 1
+    fi
+
+    # See if it's already running. Look *only* at the pid file.
+    if
+        [ -f ${pidfile} ] \
+            && kill -SIGCONT ${PID} 2> /dev/null
+    then
+        echo "PID file exists and process is running for ${prog}"
+        RETVAL=1
+    else
+        # Run as process
+        fake_sqs --port {{ fake_sqs_port }} --daemonize --pid ${pidfile} &> ${LOG}
+        RETVAL=$?
+
+        # Success
+        [ $RETVAL = 0 ] && echo "${prog} started"
+    fi
+
+    echo
+    return ${RETVAL}
+}
+
+stop() {
+    if
+        [ "${PID}" == "" ]
+    then
+        echo "${prog} is not running"
+        return 0
+    fi
+
+    echo -n $"Stopping ${prog}: "
+
+    if
+        kill -9 $(cat ${pidfile})
+    then
+        echo "Done"
+        rm -f ${pidfile}
+        return 0
+    fi
+
+    echo "Failed!"
+    return 1
+}
+
+# See how we were called.
+case "${1}" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    echo -n "Status: "
+
+    if
+        [ "${PID}" == "" ]
+    then
+        echo "Stopped"
+        RETVAL=1
+    elif
+        kill -0 ${PID} &> /dev/null
+    then
+        echo "Running (pid: ${PID})"
+        RETVAL=0
+    else
+        echo "Dead (pid was: ${PID})"
+        RETVAL=2
+    fi
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  condrestart)
+    if [ -f ${pidfile} ] ; then
+        stop
+        start
+    fi
+    ;;
+  *)
+    echo $"Usage: ${prog} {start|stop|restart|condrestart|status}"
+    exit 1
+esac
+
+exit ${RETVAL}

@@ -1,0 +1,2 @@
+rvm_path: /usr/local/rvm
+gem_path: "{{ rvm_path }}/rubies/ruby-{{ fake_sqs_ruby_version }}/bin/gem"

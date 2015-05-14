@@ -1,0 +1,8 @@
+---
+- name: "restart fakesqs"
+  service: >
+    name=fakesqs 
+    state=restarted
+  tags:
+    - fakesqs
+

@@ -1,0 +1,3 @@
+fake_sqs_port: 4568
+fake_sqs_version: 0.1.0
+fake_sqs_ruby_version: 2.1.5
