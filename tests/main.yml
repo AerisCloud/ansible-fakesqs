@@ -1,0 +1,9 @@
+---
+# The name of your test
+name: "Installation"
+playbook:
+- hosts: all
+  sudo: yes
+  roles:
+  - role: "@ROLE_NAME@"
+
