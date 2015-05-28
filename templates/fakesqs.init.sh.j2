@@ -4,6 +4,15 @@
 #
 # chkconfig: 3 50 50
 # description: Fake SQS init.d
+### BEGIN INIT INFO
+# Provides:          fakesqs
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: FakeSQS daemon
+### END INIT INFO
+
 source /etc/profile.d/rvm.sh
 prog=fake_sqs
 pidfile=/var/run/fake_sqs.pid
