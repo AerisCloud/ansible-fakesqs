@@ -18,6 +18,6 @@ galaxy_info:
   categories:
     - development
 dependencies:
-  - role: aeriscloud.rvm
+  - role: AerisCloud.rvm
     tags:
       - rvm
